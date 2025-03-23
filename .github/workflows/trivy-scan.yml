@@ -1,0 +1,26 @@
+name: Trivy Security Scan
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh
+
+      - name: Run Trivy Scan
+        run: trivy repo . --format json > trivy-results.json
+
+      - name: Upload Scan Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-results
+          path: trivy-results.json
